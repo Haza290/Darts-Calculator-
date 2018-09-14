@@ -1,37 +1,50 @@
+package com.company;
+
 import java.util.*;
 
 public class Main
 {
-	private int target = 6;
-	private int maxNumOfDarts = 1;
+	private int target = 24;
+	private int maxNumOfDarts = 3;
 	private ArrayList<ArrayList<Integer>> solutions;
 	private ArrayList<ArrayList<Integer>> exploredSolutions;
 	private ArrayList<ArrayList<String>> printableSolutions;
-	
+
 	private int[] allDartScores = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,
-		19,20,21,22,24,25,26,27,28,30,32,33,34,36,38,39,40,42,44,45,46,48,50,51,52,
-		54,56,57,60};
+			19,20,21,22,24,25,26,27,28,30,32,33,34,36,38,39,40,42,44,45,46,48,50,51,52,
+			54,56,57,60};
 	private int[] endingDartScores = {2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,
 			34,36,38,40,42,44,46,48,50,52,54,56,60};
-	
+
 	public static void main(String[] args) {
 		new Main();
 	}
-	
+
 	public Main() {
 		Long startTime = System.currentTimeMillis();
 		this.solutions = new ArrayList<>();
 		this.exploredSolutions = new ArrayList<>();
+
 		System.out.println("Starting loopback");
 		loopback(new ArrayList<Integer>());
+		Long solutionsFoundTime = System.currentTimeMillis();
+
 		printSolutions();
 		Long endTime = System.currentTimeMillis();
+
+		printSummary(startTime, solutionsFoundTime, endTime);
+	}
+
+	private void printSummary(Long startTime, Long solutionsFoundTime, Long endTime) {
+		System.out.println("-------------------------------------------");
 		System.out.println("done in: " + (endTime - startTime) + "ms");
+		System.out.println("Solutions found in: " +  (solutionsFoundTime - startTime) + "ms");
+		System.out.println("Post processing time: " + (endTime - solutionsFoundTime) + "ms");
 		System.out.println("solutions size: " + this.solutions.size());
 		System.out.println("printable solutions size: " + this.printableSolutions.size());
 	}
-	
-	
+
+
 	private void loopback(final ArrayList<Integer> currentDarts) {
 		if (isAlreadyExplored(currentDarts)) {
 			return;
@@ -53,23 +66,22 @@ public class Main
 		if (0 == currentDarts.size()){
 			for (int endingDartScore : this.endingDartScores){
 				creatNewArrayAndLoopBack(currentDarts, endingDartScore);
-				return;
 			}
 		}
 		for (int dartScore : this.allDartScores){
 			creatNewArrayAndLoopBack(currentDarts, dartScore);
 		}
 	}
-	
+
 	private void creatNewArrayAndLoopBack(ArrayList currentDarts, int dart) {
 		ArrayList<Integer> newDartsArray = new ArrayList<>(currentDarts);
 		newDartsArray.add(dart);
 		loopback(newDartsArray);
 	}
-	
+
 	private void printSolutions() {
 		postProcessing(solutions);
-		System.out.println("Solutions:");
+		System.out.println("Solutions: ");
 		for(ArrayList<String> arrayList : this.printableSolutions){
 			String solution = "";
 			for(String dart : arrayList){
@@ -79,9 +91,9 @@ public class Main
 			System.out.println(solution);
 		}
 	}
-	
+
 	private void postProcessing(ArrayList<ArrayList<Integer>> solutionIntArray){
-		
+
 		printableSolutions = new ArrayList<>();
 		for (ArrayList<Integer> dartScoreArray : solutionIntArray) {
 			postProcessingLoopback(dartScoreArray, new ArrayList<String>());
@@ -89,18 +101,18 @@ public class Main
 		for (ArrayList<String> printableSolutionsArray : printableSolutions) {
 			Collections.reverse(printableSolutionsArray);
 		}
-		
+
 	}
-	
+
 	private void postProcessingLoopback(ArrayList<Integer> unprocessesDartScores, ArrayList<String> processedDartScores) {
-					
+
 		if (unprocessesDartScores.size() == 0) {
 			this.printableSolutions.add(processedDartScores);
 			return;
 		}
 		ArrayList<Integer> nextLoopbackIntArray = new ArrayList(unprocessesDartScores);
 		nextLoopbackIntArray.remove(0);
-		
+
 		int currentDartScore = unprocessesDartScores.get(0);
 		if (((currentDartScore % 2) == 0) && ((currentDartScore / 2) <= 20)) {
 			String dartScoreString = "D" + currentDartScore/2;
@@ -129,7 +141,7 @@ public class Main
 		tmpStringArray.add(newElement);
 		postProcessingLoopback(nextLoopbackIntArray, tmpStringArray);
 	}
-	
+
 	private boolean isAlreadyExplored(ArrayList<Integer> currentDarts) {
 		// TODO rewrite this to optimise it
 		//Random rand = new Random();
@@ -145,12 +157,12 @@ public class Main
 		}
 		return false;
 	}
-	
+
 	private int sumDarts(ArrayList<Integer> darts) {
 		int sum = 0;
 		for(Integer dart : darts) {
 			sum += dart;
 		}
-		return sum; 
+		return sum;
 	}
 }
